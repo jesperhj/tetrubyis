@@ -1,1 +1,8 @@
 Tetris Clone written in Ruby using SDL.
+
+sudo port install libsdl
+On Snow Leopard and Lion you may need to run
+env ARCHFLAGS="-arch x86_64" bundle install --path vendor
+
+Optional
+sudo port install libsdl_gfx libsdl_image libsdl_mixer libsdl_ttf
