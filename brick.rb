@@ -1,5 +1,5 @@
 class Brick
-  attr_accessor :shape, :start_pos, :pos, :size
+  attr_accessor :shape, :start_pos, :pos, :size, :rotation
   
   def initialize
     shapes        = [square, line, l, inverted_l, n, inverted_n, t]
@@ -9,12 +9,23 @@ class Brick
     @shape        = shapes[shape_to_use]
     @start_pos    = start_pos[shape_to_use]
     @pos          = @start_pos
-    @direction    = 0
+    @rotation    = 0
     @size         = 5 # width and height of brick
-    @instructions = {
-      :left   => -1,
-      :right  => 1
-      }
+  end
+  
+  def move_down
+    x,y = @pos
+    @pos = [x, y+1]
+  end
+  
+  def move_left
+    x,y = @pos
+    @pos = [x-1, y]
+  end
+  
+  def move_right
+    x,y = @pos
+    @pos = [x+1, y]
   end
   
   def draw(background)
@@ -29,13 +40,16 @@ class Brick
     start_pos[1]
   end
   
-  def rotate(instruction)
-    @direction = @direction + @instuctions[instruction].to_i
+  def rotate
+    @rotation = @rotation + 1
+    @rotation = @rotation % 4
   end
   
   def get_shape
     @shape
   end
+  
+  
   
   def square
     [

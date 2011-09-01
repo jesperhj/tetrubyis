@@ -7,16 +7,22 @@ class Game
     @board          = Board.new(ROWS, COLS)
     @current_brick  = Brick.new()
     #@next_brick     = Brick.new
-    
+    @delay          = 1000
     @background.blit(@screen,[0,0])
     @screen.update()
   end
   
   def run
+    ticks = 0
     loop do
       update
-      draw      
-      @clock.tick
+      draw
+      ticks = ticks + @clock.tick.milliseconds
+      if ticks > @delay
+        @board.brick.move_down if @board.move_possible?(:down)
+        ticks = 0
+      end
+      ticks = 0 if ticks > @delay
     end
   end
   
@@ -64,24 +70,38 @@ class Game
     @current_brick = nil
     @event_queue.each do |ev|
       case ev
-        when Rubygame::QuitEvent
-          Rubygame.quit
-          exit
+        when KeyDownEvent
+          handle_keys(ev)
+        when QuitEvent
+          quit
       end
     end
     @screen.update()
   end
   
+  def handle_keys(ev)
+    case ev.key
+    when K_RIGHT
+      @board.brick.move_right if @board.move_possible?(:right)
+    when K_LEFT
+      @board.brick.move_left if @board.move_possible?(:left)
+    when K_UP
+      @board.brick.rotate
+    when K_DOWN
+      @board.brick.move_down if @board.move_possible?(:down)
+    when K_ESCAPE
+      quit
+    end
+  end
+  
   def draw
-    #@screen.fill([40,40,150],rect1)
-    
-    #@board.screen.blit(background,[50,50],[0,0,90,80])
     @board.draw(@screen)
     @screen.update
   end
   
   def quit
     Rubygame.quit()
+    exit
   end
   
 end
