@@ -1,4 +1,4 @@
-class Game
+class Game  
   
   def initialize
     setup_screen
@@ -6,7 +6,7 @@ class Game
     setup_clock
     @board          = Board.new(ROWS, COLS)
     @current_brick  = Brick.new()
-    #@next_brick     = Brick.new
+    @next_brick     = Brick.new
     @delay          = 1000
     @background.blit(@screen,[0,0])
     @screen.update()
@@ -19,7 +19,13 @@ class Game
       draw
       ticks = ticks + @clock.tick.milliseconds
       if ticks > @delay
-        @board.brick.move_down if @board.move_possible?(:down)
+        if @board.move_possible?(:down)
+          @board.brick.move_down
+        else
+          @board.attach_brick
+          @board.remove_full_rows
+          new_brick
+        end
         ticks = 0
       end
       ticks = 0 if ticks > @delay
@@ -27,8 +33,8 @@ class Game
   end
   
   def new_brick
-    #@current_brick  = @next_brick
-    #@next_brick     = Brick.new
+    @current_brick  = @next_brick
+    @next_brick     = Brick.new
   end
   
   def setup_screen
@@ -86,7 +92,7 @@ class Game
     when K_LEFT
       @board.brick.move_left if @board.move_possible?(:left)
     when K_UP
-      @board.brick.rotate
+      @board.brick.rotate if @board.rotate_possible?
     when K_DOWN
       @board.brick.move_down if @board.move_possible?(:down)
     when K_ESCAPE
